@@ -21,5 +21,12 @@
   ],
   "author": "Thorsten Lorenz <thlorenz@gmx.de> (thlorenz.com)",
   "license": "MIT",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "readdirp": "~0.2.1",
+    "detective": "~0.2.1"
+  },
+  "devDependencies": {
+    "tap": "~0.3.3"
+  }
 }
