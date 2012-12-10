@@ -1,0 +1,25 @@
+{
+  "name": "justincase",
+  "version": "0.0.0",
+  "description": "Checks that all require statements point to an existing path and are correctly cased.",
+  "main": "justincase.js",
+  "scripts": {
+    "test": "tap ./test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thlorenz/justincase.git"
+  },
+  "keywords": [
+    "require",
+    "casing",
+    "static",
+    "code",
+    "check",
+    "build",
+    "integration"
+  ],
+  "author": "Thorsten Lorenz <thlorenz@gmx.de> (thlorenz.com)",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
