@@ -6,6 +6,9 @@ var test = require('tap').test
   , path = require('path')
   , pathToModule = path.join(__dirname, './some-module.js')
 
+  // on linux platforms files are case sensitive, so resolve will fail properly and our custom errors will not appear
+  , isMac = require('os').platform() === 'darwin'
+
 test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
   t.test('\n# when a module requires ./deps/uno', function (t) {
     var src = '' + function foo() { 
@@ -25,7 +28,9 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
 
     validate(pathToModule, src, function (errors) {
       t.equals(errors.length, 1, 'finds one error')
-      t.similar(errors[0].message, /doesn't exactly match .*directory path/, 'warns that directory paths do not exactly match')
+      if (isMac) {
+        t.similar(errors[0].message, /doesn't exactly match .*directory path/, 'warns that directory paths do not exactly match')
+      }
       t.end()
     })
   })  
@@ -38,8 +43,10 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
 
     validate(pathToModule, src, function (errors) {
       t.equals(errors.length, 1, 'finds one error')
-      t.similar(errors[0].message, /uNo.+doesn't exactly match .*file path/, 'warns that file paths do not exactly match')
-      t.similar(errors[0].message, /.+uno.+/, 'includes file that was inexactly matched in the message')
+      if (isMac) {
+        t.similar(errors[0].message, /uNo.+doesn't exactly match .*file path/, 'warns that file paths do not exactly match')
+        t.similar(errors[0].message, /.+uno.+/, 'includes file that was inexactly matched in the message')
+      }
       t.end()
     })
   })  
