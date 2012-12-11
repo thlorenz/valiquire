@@ -83,3 +83,32 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
   })  
 })
 
+test('\nglobal modules', function (t) {
+  
+  t.test('\n# when a module requires fs Path and uTils', function (t) {
+    var src = '' + function foo() { 
+      require('fs');
+      require('Path');
+      require('uTils');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 2, 'finds two errors')
+      t.end()
+    })
+  })
+
+  t.test('\n# when a module requires fs and uTils', function (t) {
+    var src = '' + function foo() { 
+      require('fs');
+      require('uTils');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.similar(errors[0].message, /Cannot find module/, 'warns that module does not exist')
+      t.equals(errors.length, 1, 'finds one error')
+      t.end()
+    })
+  })
+})
+
