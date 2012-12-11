@@ -24,7 +24,8 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "readdirp": "~0.2.1",
-    "detective": "~0.2.1"
+    "detective": "~0.2.1",
+    "map-stream": "0.0.1"
   },
   "devDependencies": {
     "tap": "~0.3.3"
