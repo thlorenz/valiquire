@@ -6,8 +6,47 @@ var test = require('tap').test
   , path = require('path')
   , pathToModule = path.join(__dirname, 'fixtures/some-module.js')
 
-test('given ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
-  t.test('when a module requires ./deps/Uno.js ./deps/dos.js ./deps/cuatro.js', function (t) {
+test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
+  t.test('\n# when a module requires ./Deps/uno.js ./deps/dos.js ', function (t) {
+    var src = '' + function foo() { 
+      require('./Deps/uno.js');
+      require('./deps/dos.js');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 1, 'finds one error')
+      t.similar(errors[0].message, /doesn't exactly match .*directory path/, 'warns that directory paths do not exactly match')
+      t.end()
+    })
+  })  
+
+  t.test('\n# when a module requires ./deps/uNo.js ./deps/dos.js ', function (t) {
+    var src = '' + function foo() { 
+      require('./deps/uNo.js');
+      require('./deps/dos.js');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 1, 'finds one error')
+      t.similar(errors[0].message, /doesn't exactly match .*file path/, 'warns that file paths do not exactly match')
+      t.end()
+    })
+  })  
+
+  t.test('\n# when a module requires ./deps/dos.js ./deps/cuatro.js', function (t) {
+    var src = '' + function foo() { 
+      require('./deps/dos.js');
+      require('./deps/cuatro.js');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 1, 'finds one error')
+      t.similar(errors[0].message, /doesn't exist/, 'warns that file does not exist')
+      t.end()
+    })
+  })
+
+  t.test('\n# when a module requires ./deps/Uno.js ./deps/dos.js ./deps/cuatro.js', function (t) {
     var src = '' + function foo() { 
       require('./deps/Uno.js');
       require('./deps/dos.js');
@@ -15,23 +54,10 @@ test('given ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
     }
 
     validate(pathToModule, src, function (errors) {
-      console.log(errors);
       t.equals(errors.length, 2, 'finds two errors')
       t.end()
     })
   })  
 
-  t.test('when a module requires ./Deps/uno.js ./deps/dos.js ', function (t) {
-    var src = '' + function foo() { 
-      require('./Deps/uno.js');
-      require('./deps/dos.js');
-    }
-
-    validate(pathToModule, src, function (errors) {
-      console.log(errors);
-      t.equals(errors.length, 1, 'finds one error')
-      t.end()
-    })
-  })  
 })
 
