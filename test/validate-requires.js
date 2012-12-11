@@ -4,9 +4,19 @@
 var test = require('tap').test
   , validate = require('../lib/validate-requires')
   , path = require('path')
-  , pathToModule = path.join(__dirname, 'fixtures/some-module.js')
+  , pathToModule = path.join(__dirname, './some-module.js')
 
 test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
+  t.test('\n# when a module requires ./deps/uno', function (t) {
+    var src = '' + function foo() { 
+      require('./deps/uno');
+    }
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 0, 'finds no error')
+      t.end()
+    })
+  })
+
   t.test('\n# when a module requires ./Deps/uno.js ./deps/dos.js ', function (t) {
     var src = '' + function foo() { 
       require('./Deps/uno.js');
@@ -41,7 +51,7 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
 
     validate(pathToModule, src, function (errors) {
       t.equals(errors.length, 1, 'finds one error')
-      t.similar(errors[0].message, /doesn't exist/, 'warns that file does not exist')
+      t.similar(errors[0].message, /Cannot find module/, 'warns that module does not exist')
       t.end()
     })
   })
@@ -59,5 +69,17 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
     })
   })  
 
+  t.test('\n# when a module requires ./deps/Uno ./deps/dos ./deps/cuatro', function (t) {
+    var src = '' + function foo() { 
+      require('./deps/Uno');
+      require('./deps/dos');
+      require('./deps/cuatro');
+    }
+
+    validate(pathToModule, src, function (errors) {
+      t.equals(errors.length, 2, 'finds two errors')
+      t.end()
+    })
+  })  
 })
 
