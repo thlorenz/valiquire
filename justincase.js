@@ -1,6 +1,5 @@
 'use strict';
-var detective = require('detective')
-  , readdirp = require('readdirp')
+var readdirp = require('readdirp')
   , maps = require('map-stream')
   , fs = require('fs')
   , directoryFilter = [ '!node_modules', '!.git', '!.svn' ];
@@ -10,7 +9,7 @@ module.exports = function (root, cb) {
   readdirp({ root: root, fileFilter: '*.js', directoryFilter: directoryFilter })
     .on('error', function (err) { console.error('fatal error reading files', err); })
     .pipe(maps(fileContent))
-    .pipe(maps(validateRequires))
+    .pipe(maps(require('./lib/validate-requires')))
     .on('end', function () { console.log('done'); });
 
 };
@@ -22,6 +21,3 @@ function fileContent(entry, cb) {
   });
 }
 
-function validateRequires(fullPath) {
-
-}
