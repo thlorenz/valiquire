@@ -1,14 +1,14 @@
 {
-  "name": "justincase",
+  "name": "valiquire",
   "version": "0.0.0",
-  "description": "Checks that all require statements point to an existing path and are correctly cased.",
-  "main": "justincase.js",
+  "description": "Validates that all require statements in a project point to an existing path and are correctly cased.",
+  "main": "valiquire.js",
   "scripts": {
     "test": "tap ./test/"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/thlorenz/justincase.git"
+    "url": "git://github.com/thlorenz/valiquire.git"
   },
   "keywords": [
     "require",
