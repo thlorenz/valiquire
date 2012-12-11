@@ -1,4 +1,3 @@
-justincase
-==========
+# valiquire
 
-Checks that all require statements point to an existing path and are correctly cased.
+Validates that all require statements in a project point to an existing path and are correctly cased.
