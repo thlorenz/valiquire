@@ -38,7 +38,8 @@ test('\ngiven ./deps/uno.js ./deps/dos.js ./deps/tres.js', function (t) {
 
     validate(pathToModule, src, function (errors) {
       t.equals(errors.length, 1, 'finds one error')
-      t.similar(errors[0].message, /doesn't exactly match .*file path/, 'warns that file paths do not exactly match')
+      t.similar(errors[0].message, /uNo.+doesn't exactly match .*file path/, 'warns that file paths do not exactly match')
+      t.similar(errors[0].message, /.+uno.+/, 'includes file that was inexactly matched in the message')
       t.end()
     })
   })  
