@@ -4,7 +4,7 @@
   "description": "Validates that all require statements in a project point to an existing path and are correctly cased.",
   "main": "valiquire.js",
   "scripts": {
-    "test": "tap ./test/"
+    "test": "tap ./test/*.js"
   },
   "repository": {
     "type": "git",

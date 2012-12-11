@@ -2,7 +2,7 @@
 /*jshint asi:true */
 
 var test = require('tap').test
-  , validate = require('../lib/validate-requires')
+  , validate = require('../validate-requires')
   , path = require('path')
   , pathToModule = path.join(__dirname, './some-module.js')
 

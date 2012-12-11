@@ -2,7 +2,7 @@
 var readdirp         =  require('readdirp')
   , map              =  require('map-stream')
   , fs               =  require('fs')
-  , validateRequires =  require('./lib/validate-requires')
+  , validateRequires =  require('./validate-requires')
   , directoryFilter  =  [ '!node_modules', '!.git', '!.svn' ];
 
 module.exports = function (root, cb) {
