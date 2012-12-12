@@ -6,7 +6,7 @@ Validates that all require statements in a project point to an existing path and
 
 # From root of project
 
-`valiquire`
+`valiquire .`
 
 # Or from anywhere
 
