@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Validates that all require statements in a project point to an existing path and are correctly cased.",
   "main": "valiquire.js",
+  "bin": {
+    "valiquire": "./bin/valiquire.js"
+  },
   "scripts": {
     "test": "tap ./test/*.js"
   },

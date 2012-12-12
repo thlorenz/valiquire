@@ -4,6 +4,9 @@ var valiquire = require('..')
   , tasks = args.length
   , fail = false;
 
+// default project directory to .
+if (!args.length) args = ['.'];
+
 args.forEach(function (p) {
   valiquire(p, function (err, errors) {
     if (err) {
