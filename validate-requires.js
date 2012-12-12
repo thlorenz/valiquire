@@ -41,7 +41,7 @@ function validateRequire(fullPath, requirePath, cb) {
 
   try {
     // is it global?
-    require.resolve(requirePath);
+    fullRequiredPath = require.resolve(requirePath);
     return cb(null);
   } catch (e) {
     // not global, keep going
