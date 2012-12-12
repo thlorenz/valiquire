@@ -6,11 +6,19 @@ var test = require('tap').test
   , path = require('path')
   , pathToModule = path.join(__dirname, './some-module.js')
 
-test('\nwhen source contains unparsable code', function (t) {
+test('\nwhen source contains unparsable code and mode is strict', function (t) {
   var src = ' { wtf require("something") ' 
-  validate(pathToModule, src, function (errors) {
+  validate(pathToModule, src, { strict: true }, function (errors) {
     t.similar(errors[0].message, /Error parsing.+some-module/, 'warns that module has invalid code')
     t.equals(errors.length, 1, 'finds one error')
+    t.end()
+  })
+})
+
+test('\nwhen source contains unparsable code and mode is not strict', function (t) {
+  var src = ' { wtf require("something") ' 
+  validate(pathToModule, src, function (errors) {
+    t.equals(errors.length, 0, 'finds no error')
     t.end()
   })
 })
