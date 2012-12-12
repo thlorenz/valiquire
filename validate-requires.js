@@ -70,7 +70,7 @@ function validateRequire(fullPath, requirePath, cb) {
     var fullFileName = path.basename(require.resolve(fullRequiredPath));
     fs.readdir(dir, function (err, entries) {
       // Exact match no error
-      if (~entries.indexOf(fullFileName)) cb(null);
+      if (~entries.indexOf(fullFileName)) return cb(null);
 
       var matchingEntry;
       for (var i = 0; i < entries.length; i++) {

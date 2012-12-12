@@ -136,3 +136,11 @@ test('\nwhen source starts with shebang and has one valid require', function (t)
     t.end()
   })
 })
+
+test('\nwhen source starts with shebang and has one invalid require', function (t) {
+  var src = '#!/usr/bin/env node \n var fs = require("Fs");' 
+  validate(pathToModule, src, function (errors) {
+    t.equals(errors.length, 1, 'finds one error')
+    t.end()
+  })
+})
