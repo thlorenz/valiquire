@@ -6,10 +6,15 @@ var detective =  require('detective')
   , requireLike = require('require-like')
   , exists    =  fs.exists || path.exists;
 
-module.exports = function validateRequires(fullPath, src, cb) {
+module.exports = function validateRequires(fullPath, src, opts, cb) {
   var errors = []
     , currentdir = process.cwd();
-      
+  
+  if (!cb) {
+    cb = opts;
+    opts = {};
+  }
+
   // remove shebang
   src = src.replace(/^\#\!.*/, '');
 
@@ -30,7 +35,7 @@ module.exports = function validateRequires(fullPath, src, cb) {
     });
   } catch (e) {
     e.message = format('Error parsing %s:\n', fullPath) + e.message;
-    cb([ e ]);
+    cb(opts.strict ? [ e ] : []);
     process.chdir(currentdir);
   }
 };
