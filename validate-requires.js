@@ -3,10 +3,10 @@ var detective =  require('detective')
   , fs        =  require('fs')
   , path      =  require('path')
   , format    =  require('util').format
-  , findPath  =  require('module')._findPath
+  , requireLike = require('require-like')
   , exists    =  fs.exists || path.exists;
 
-module.exports = function validateRequires(fullPath, src, paths, cb) {
+module.exports = function validateRequires(fullPath, src, cb) {
   var errors = []
     , currentdir = process.cwd();
       
@@ -20,7 +20,7 @@ module.exports = function validateRequires(fullPath, src, paths, cb) {
     if (!tasks) return cb([]);
 
     requires.forEach(function(requirePath) {
-      validateRequire(fullPath, requirePath, paths, function (error) {
+      validateRequire(fullPath, requirePath, function (error) {
         if (error) errors.push(error);
         if (!--tasks) { 
           process.chdir(currentdir);
@@ -39,41 +39,20 @@ function isFilePath(p) {
   return p.indexOf(path.sep) > 0 || p === '..';
 }
 
-function validateRequire(fullPath, requirePath, paths, cb) {
+function validateRequire(fullPath, requirePath, cb) {
   var header = format('Inside "%s"\nCannot resolve "%s" because:\n', fullPath, requirePath)
+      // resolve relative to the module being validated in order to make relative paths and node_modules work
+    , resolve = requireLike(fullPath).resolve
     , fullRequiredPath;
 
-  var resolvedPath = isFilePath(requirePath) 
-      // In case requirePath is absolute, resolve will just return it
-    ? path.resolve(path.dirname(fullPath), requirePath)
-    : requirePath;
-
   try {
-    // This will succeed for absolute paths and core modules
-    fullRequiredPath = require.resolve(resolvedPath);
+    fullRequiredPath = resolve(requirePath);
 
-    var isCore = fullRequiredPath === resolvedPath && !isFilePath(resolvedPath); 
+    var isCore = fullRequiredPath === requirePath && !isFilePath(fullRequiredPath); 
     if (isCore) return cb(null);
   } catch (e) {
-
-    try {
-      // This will succeed for modules relative to the module whose require we are validating
-      fullRequiredPath = fullRequiredPath || require.resolve(resolvedPath);
-    } catch (e) {
-      try {
-        // If we don't have a fullRequiredPath by now, we are dealing with an installed node_module
-        // use custom find path since require.resolve will be relative to this tool, not to the project we are validating
-        // and therefore wouldn't find the right node_modules.
-        fullRequiredPath = fullRequiredPath || findPath(requirePath, paths);
-
-        // Still unsucessfull (maybe correct paths weren't supplied)?
-        // Let's hope that we are run from the node_modules of the very project we are validating
-        fullRequiredPath = fullRequiredPath || require.resolve(requirePath);
-      } catch (e) {
-        // module doesn't exist at all - at least we can't find it
-        if (e) return cb(new Error(header + e.message));
-      }
-    }
+    // module doesn't exist at all - at least we can't find it
+    if (e) return cb(new Error(header + e.message));
   }
 
 
