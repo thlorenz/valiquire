@@ -3,9 +3,10 @@ var detective =  require('detective')
   , fs        =  require('fs')
   , path      =  require('path')
   , format    =  require('util').format
+  , findPath  =  require('module')._findPath
   , exists    =  fs.exists || path.exists;
 
-module.exports = function validateRequires(fullPath, src, cb) {
+module.exports = function validateRequires(fullPath, src, paths, cb) {
   var errors = []
     , currentdir = process.cwd();
       
@@ -19,7 +20,7 @@ module.exports = function validateRequires(fullPath, src, cb) {
     if (!tasks) return cb([]);
 
     requires.forEach(function(requirePath) {
-      validateRequire(fullPath, requirePath, function (error) {
+      validateRequire(fullPath, requirePath, paths, function (error) {
         if (error) errors.push(error);
         if (!--tasks) { 
           process.chdir(currentdir);
@@ -34,25 +35,47 @@ module.exports = function validateRequires(fullPath, src, cb) {
   }
 };
 
-function validateRequire(fullPath, requirePath, cb) {
-  var resolvedPath = path.resolve(path.dirname(fullPath), requirePath)
-    , header = format('Inside "%s"\nCannot resolve "%s" because:\n', fullPath, requirePath)
+function isFilePath(p) {
+  return p.indexOf(path.sep) > 0 || p === '..';
+}
+
+function validateRequire(fullPath, requirePath, paths, cb) {
+  var header = format('Inside "%s"\nCannot resolve "%s" because:\n', fullPath, requirePath)
     , fullRequiredPath;
 
-  try {
-    // is it global?
-    fullRequiredPath = require.resolve(requirePath);
-    return cb(null);
-  } catch (e) {
-    // not global, keep going
-  }
+  var resolvedPath = isFilePath(requirePath) 
+      // In case requirePath is absolute, resolve will just return it
+    ? path.resolve(path.dirname(fullPath), requirePath)
+    : requirePath;
 
   try {
+    // This will succeed for absolute paths and core modules
     fullRequiredPath = require.resolve(resolvedPath);
+
+    var isCore = fullRequiredPath === resolvedPath && !isFilePath(resolvedPath); 
+    if (isCore) return cb(null);
   } catch (e) {
-    // module doesn't exist at all
-    if (e) return cb(new Error(header + e.message));
+
+    try {
+      // This will succeed for modules relative to the module whose require we are validating
+      fullRequiredPath = fullRequiredPath || require.resolve(resolvedPath);
+    } catch (e) {
+      try {
+        // If we don't have a fullRequiredPath by now, we are dealing with an installed node_module
+        // use custom find path since require.resolve will be relative to this tool, not to the project we are validating
+        // and therefore wouldn't find the right node_modules.
+        fullRequiredPath = fullRequiredPath || findPath(requirePath, paths);
+
+        // Still unsucessfull (maybe correct paths weren't supplied)?
+        // Let's hope that we are run from the node_modules of the very project we are validating
+        fullRequiredPath = fullRequiredPath || require.resolve(requirePath);
+      } catch (e) {
+        // module doesn't exist at all - at least we can't find it
+        if (e) return cb(new Error(header + e.message));
+      }
+    }
   }
+
 
   exists(fullRequiredPath, function (yes) {
     if (!yes) return cb(new Error(format('%s"%s" doesn\'t exist.', header, fullRequiredPath)));
