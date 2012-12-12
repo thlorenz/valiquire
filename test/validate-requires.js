@@ -120,3 +120,19 @@ test('\nglobal modules', function (t) {
   })
 })
 
+test('\nwhen source contains unparsable code', function (t) {
+  var src = ' { wtf require("something") ' 
+  validate(pathToModule, src, function (errors) {
+    t.similar(errors[0].message, /Error parsing.+some-module/, 'warns that module has invalid code')
+    t.equals(errors.length, 1, 'finds one error')
+    t.end()
+  })
+})
+
+test('\nwhen source starts with shebang and has one valid require', function (t) {
+  var src = '#!/usr/bin/env node \n var fs = require("fs");' 
+  validate(pathToModule, src, function (errors) {
+    t.equals(errors.length, 0, 'finds no error')
+    t.end()
+  })
+})

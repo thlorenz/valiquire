@@ -8,6 +8,9 @@ var detective =  require('detective')
 module.exports = function validateRequires(fullPath, src, cb) {
   var errors = []
     , currentdir = process.cwd();
+      
+  // remove shebang
+  src = src.replace(/^\#\!.*/, '');
 
   try {
     var requires = detective(src)
@@ -25,6 +28,7 @@ module.exports = function validateRequires(fullPath, src, cb) {
       });
     });
   } catch (e) {
+    e.message = format('Error parsing %s:\n', fullPath) + e.message;
     cb([ e ]);
     process.chdir(currentdir);
   }
