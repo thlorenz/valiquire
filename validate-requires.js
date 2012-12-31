@@ -1,10 +1,11 @@
 'use strict';
-var detective =  require('detective')
-  , fs        =  require('fs')
-  , path      =  require('path')
-  , format    =  require('util').format
-  , requireLike = require('require-like')
-  , exists    =  fs.exists || path.exists;
+
+var detective   =  require('detective')
+  , fs          =  require('fs')
+  , path        =  require('path')
+  , format      =  require('util').format
+  , requireLike =  require('require-like')
+  , exists      =  fs.exists || path.exists;
 
 module.exports = function validateRequires(fullPath, src, opts, cb) {
   var errors = []
