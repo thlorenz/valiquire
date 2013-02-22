@@ -1,11 +1,18 @@
 #!/usr/bin/env node
+'use strict';
+
 var valiquire = require('..')
+  , path = require('path')
   , args = process.argv.slice(2)
   , tasks = args.length
-  , fail = false;
+  , fail = false
+  , redirect;
 
 // default project directory to .
 if (!args.length) args = ['.'];
+
+var redirectIndex = args.indexOf('--redirect');
+if(~redirectIndex) resolveRedirect();
 
 args.forEach(function (p) {
   valiquire(p, function (err, errors) {
@@ -32,4 +39,22 @@ args.forEach(function (p) {
 });
 
 
+function resolveRedirect() {
+  var redirectPath = args[redirectIndex + 1];
+  
+  if (!redirectPath) {
+    console.error('If --redirect is supplied the next argument needs to be the path to the module containing the redirect function');
+    process.exit(1);
+  }
 
+  // remove --redirect path
+  args.splice(redirectIndex, 2);
+  try {
+    // if not fullPath
+    redirectPath = path.join(process.cwd(), redirectPath);
+    redirect = require(redirectPath);
+  } catch(e) {
+    console.error('Unable to resolve redirect', e);
+    process.exit(1);
+  }
+}

@@ -5,7 +5,25 @@ var readdirp         =  require('readdirp')
   , validateRequires =  require('./validate-requires')
   , directoryFilter  =  [ '!node_modules', '!.git', '!.svn' ];
 
-module.exports = function (root, cb) {
+module.exports = function (root, redirect, cb) {
+  if (!cb) { 
+    cb = redirect;
+    redirect = null;
+  }
+
+  function readFile(entry, cb) {
+    fs.readFile(entry.fullPath, 'utf-8', function (err, res) {
+        if (err) return console.error(err);
+        cb(null, { fullPath: entry.fullPath, src: res });
+    });
+  }
+
+  function validate(opts, cb) {
+    validateRequires(opts.fullPath, opts.src, { redirect: redirect }, function (errors) {
+      cb(null, errors);  
+    });
+  }
+
   var errors = [];
   readdirp({ root: root, fileFilter: '*.js', directoryFilter: directoryFilter })
     .on('error', function (err) { 
@@ -22,15 +40,3 @@ module.exports = function (root, cb) {
 
 };
 
-function readFile(entry, cb) {
-  fs.readFile(entry.fullPath, 'utf-8', function (err, res) {
-      if (err) return console.error(err);
-      cb(null, { fullPath: entry.fullPath, src: res });
-  });
-}
-
-function validate(opts, cb) {
-  validateRequires(opts.fullPath, opts.src, function (errors) {
-    cb(null, errors);  
-  });
-}
