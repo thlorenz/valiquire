@@ -15,25 +15,31 @@ module.exports = function validateRequires(fullPath, src, opts, cb) {
     cb = opts;
     opts = {};
   }
+  opts.redirect = opts.redirect || function identity(requirePath) { return requirePath; };
 
   // remove shebang
   src = src.replace(/^\#\!.*/, '');
 
   try {
-    var requires = detective(src)
-      , tasks = requires.length;
+    var requires = detective(src);
 
+    var filteredRequires = requires
+      .map(opts.redirect)
+      .filter(function (requirePath) { return requirePath !== null; });
+
+    var tasks = filteredRequires.length;
     if (!tasks) return cb([]);
 
-    requires.forEach(function(requirePath) {
-      validateRequire(fullPath, requirePath, function (error) {
-        if (error) errors.push(error);
-        if (!--tasks) { 
-          process.chdir(currentdir);
-          cb(errors);
-        }
+    filteredRequires
+      .forEach(function(requirePath) {
+        validateRequire(fullPath, requirePath, function (error) {
+          if (error) errors.push(error);
+          if (!--tasks) { 
+            process.chdir(currentdir);
+            cb(errors);
+          }
+        });
       });
-    });
   } catch (e) {
     e.message = format('Error parsing %s:\n', fullPath) + e.message;
     cb(opts.strict ? [ e ] : []);
