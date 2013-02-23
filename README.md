@@ -4,6 +4,8 @@ Validates that all require statements in a project point to an existing path and
 
 ![screenshot](https://raw.github.com/thlorenz/valiquire/master/assets/screenshot.jpg)
 
+*screenshot condensed for brevity*
+
 ## Installation
 
 `npm -g install valiquire`
