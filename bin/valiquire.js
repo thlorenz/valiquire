@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 
-var valiquire =  require('..')
-  , fs        =  require('fs')
-  , colors    =  require('ansicolors')
-  , args      =  process.argv.slice(2)
-  , tasks     =  args.length
+var valiquire   =  require('..')
+  , fs          =  require('fs')
+  , colors      =  require('ansicolors')
+  , requireLike =  require('require-like')
+  , args        =  process.argv.slice(2)
+  , tasks       =  args.length
   , fail      =  false
   , redirect;
 
@@ -23,14 +24,17 @@ args.forEach(function (p) {
     }
     if (errors.length) {
       fail = true;
+      console.log('\n');
       errors.forEach(function (err) {
         console.log(err);  
       });
+      console.error('[%s] require statements couldn\'t be resolved!', colors.red(errors.length));
+      console.error(colors.red('Not OK!'));
     }
     if (!--tasks) {
       if (fail) {
-        console.error('[%s] require statements couldn\'t be resolved!', colors.red(errors.length));
-        console.error('Encountered errors during validations.\n' + colors.red('Not OK!'));
+        console.error('Encountered JavaScript errors during validations.');
+        console.error(colors.red('Not OK!'));
         process.exit(1);
       } else {
         console.log('No validation errors found. Everything OK.');
