@@ -13,7 +13,7 @@ var valiquire   =  require('..')
 if (!args.length) args = ['.'];
 
 var redirectIndex = args.indexOf('--redirect');
-if(~redirectIndex) redirect = resolveRedirect();
+if(~redirectIndex) redirect = resolveRedirect(redirectIndex);
 
 var tasks = args.length;
 
@@ -44,7 +44,7 @@ args.forEach(function (p) {
 });
 
 
-function resolveRedirect() {
+function resolveRedirect(redirectIndex) {
   var redirectPath = args[redirectIndex + 1];
   
   if (!redirectPath) {
