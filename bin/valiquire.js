@@ -6,7 +6,6 @@ var valiquire   =  require('..')
   , colors      =  require('ansicolors')
   , requireLike =  require('require-like')
   , args        =  process.argv.slice(2)
-  , tasks       =  args.length
   , fail      =  false
   , redirect;
 
@@ -16,24 +15,24 @@ if (!args.length) args = ['.'];
 var redirectIndex = args.indexOf('--redirect');
 if(~redirectIndex) redirect = resolveRedirect();
 
+var tasks = args.length;
+
 args.forEach(function (p) {
   valiquire(p, redirect, function (err, errors) {
     if (err) {
       console.error(err);
       process.exit(1);
     }
+    console.log('\n');
     if (errors.length) {
       fail = true;
-      console.log('\n');
       errors.forEach(function (err) {
         console.log(err);  
       });
-      console.error('[%s] require statements couldn\'t be resolved!', colors.red(errors.length));
-      console.error(colors.red('Not OK!'));
     }
     if (!--tasks) {
       if (fail) {
-        console.error('Encountered JavaScript errors during validations.');
+        console.error('[%s] require statements couldn\'t be resolved!', colors.red(errors.length));
         console.error(colors.red('Not OK!'));
         process.exit(1);
       } else {
