@@ -4,10 +4,14 @@ Validates that all require statements in a project point to an existing path and
 
 `npm -g install valiquire`
 
-# From root of project
+## From root of project
 
 `valiquire .`
 
-# Or from anywhere
+## Or from anywhere
 
 `valiquire /path/to/project`
+
+
+## Redirecting requires
+

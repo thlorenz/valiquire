@@ -3,6 +3,7 @@
 
 var valiquire =  require('..')
   , fs        =  require('fs')
+  , colors    =  require('ansicolors')
   , args      =  process.argv.slice(2)
   , tasks     =  args.length
   , fail      =  false
@@ -25,11 +26,11 @@ args.forEach(function (p) {
       errors.forEach(function (err) {
         console.log(err);  
       });
-      console.error('Found [%s] require statements that couldn\'t be resolved!', errors.length);
     }
     if (!--tasks) {
       if (fail) {
-        console.error('Encountered errors during validations. Not OK!');
+        console.error('[%s] require statements couldn\'t be resolved!', colors.red(errors.length));
+        console.error('Encountered errors during validations.\n' + colors.red('Not OK!'));
         process.exit(1);
       } else {
         console.log('No validation errors found. Everything OK.');

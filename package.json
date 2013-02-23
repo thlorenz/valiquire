@@ -29,7 +29,8 @@
     "readdirp": "~0.2.1",
     "detective": "~0.2.1",
     "map-stream": "0.0.1",
-    "require-like": "~0.1.2"
+    "require-like": "~0.1.2",
+    "ansicolors": "~0.2.1"
   },
   "devDependencies": {
     "tap": "~0.4.0"
