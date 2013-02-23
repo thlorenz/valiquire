@@ -2,18 +2,24 @@
 
 Validates that all require statements in a project point to an existing path and are correctly cased.
 
+![screenshot](https://raw.github.com/thlorenz/valiquire/master/assets/screenshot.jpg)
+
+## Installation
+
 `npm -g install valiquire`
 
-## From root of project
+## Usage 
+
+### From root of project
 
 `valiquire .`
 
-## Or from anywhere
+### Or from anywhere
 
 `valiquire /path/to/project`
 
 
-## Redirecting requires
+### Redirecting requires
 
 In some scenarios, the require statements aren't resolvable by the nodejs `require` as is. 
 
@@ -23,7 +29,7 @@ As an example this could be the case when using [browserify]() either because mo
 In these cases we'd like to either tell valiquire where to find the modules and/or to ignore them. In order to do this,
 we simply create a module that exports a redirect function and then specify it as the `--redirect` option. 
 
-### Example:
+#### Example:
 
 The below redirect function ignores the `generated-later.json` file and redirects valiquire to the client side vendor
 libraries
