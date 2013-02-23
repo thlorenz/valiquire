@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 'use strict';
 
-var valiquire = require('..')
-  , path = require('path')
-  , args = process.argv.slice(2)
-  , tasks = args.length
-  , fail = false
+var valiquire =  require('..')
+  , fs        =  require('fs')
+  , args      =  process.argv.slice(2)
+  , tasks     =  args.length
+  , fail      =  false
   , redirect;
 
 // default project directory to .
 if (!args.length) args = ['.'];
 
 var redirectIndex = args.indexOf('--redirect');
-if(~redirectIndex) resolveRedirect();
+if(~redirectIndex) redirect = resolveRedirect();
 
 args.forEach(function (p) {
-  valiquire(p, function (err, errors) {
+  valiquire(p, redirect, function (err, errors) {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -23,8 +23,9 @@ args.forEach(function (p) {
     if (errors.length) {
       fail = true;
       errors.forEach(function (err) {
-        console.error(err);  
+        console.log(err);  
       });
+      console.error('Found [%s] require statements that couldn\'t be resolved!', errors.length);
     }
     if (!--tasks) {
       if (fail) {
@@ -50,9 +51,8 @@ function resolveRedirect() {
   // remove --redirect path
   args.splice(redirectIndex, 2);
   try {
-    // if not fullPath
-    redirectPath = path.join(process.cwd(), redirectPath);
-    redirect = require(redirectPath);
+    redirectPath = fs.realpathSync(redirectPath);
+    return require(redirectPath);
   } catch(e) {
     console.error('Unable to resolve redirect', e);
     process.exit(1);
